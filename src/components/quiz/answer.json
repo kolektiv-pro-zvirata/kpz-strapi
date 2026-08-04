@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_quiz_answers",
+  "info": {
+    "displayName": "Answer",
+    "description": "A single quiz answer option"
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "string",
+      "required": true
+    },
+    "isCorrect": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    }
+  }
+}

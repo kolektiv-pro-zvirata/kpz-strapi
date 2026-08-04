@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_quiz_questions",
+  "info": {
+    "displayName": "Question",
+    "description": "A quiz question with its answer options"
+  },
+  "options": {},
+  "attributes": {
+    "question": {
+      "type": "string",
+      "required": true
+    },
+    "explanation": {
+      "type": "text"
+    },
+    "answers": {
+      "type": "component",
+      "repeatable": true,
+      "component": "quiz.answer",
+      "min": 2
+    }
+  }
+}

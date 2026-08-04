@@ -1,0 +1,29 @@
+{
+  "kind": "collectionType",
+  "collectionName": "levels",
+  "info": {
+    "singularName": "level",
+    "pluralName": "levels",
+    "displayName": "Level",
+    "description": "Gamification levels and their names (e.g. Zvědavý mrkvožrout)"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "level": {
+      "type": "integer",
+      "required": true,
+      "unique": true,
+      "min": 1
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "pointsRequired": {
+      "type": "integer"
+    }
+  }
+}

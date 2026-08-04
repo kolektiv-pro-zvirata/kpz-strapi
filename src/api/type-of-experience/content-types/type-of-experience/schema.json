@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "type_of_experiences",
+  "info": {
+    "singularName": "type-of-experience",
+    "pluralName": "type-of-experiences",
+    "displayName": "Type of Experience",
+    "description": "Kind of experience: recipe, video, quiz or task"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name"
+    },
+    "description": {
+      "type": "text"
+    },
+    "icon": {
+      "type": "string"
+    },
+    "experiences": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::experience.experience",
+      "mappedBy": "typeOfExperience"
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "kind": "collectionType",
+  "collectionName": "experiences",
+  "info": {
+    "singularName": "experience",
+    "pluralName": "experiences",
+    "displayName": "Experience",
+    "description": "A single lesson item (recipe, video, quiz or task) belonging to one or more topics"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name"
+    },
+    "thumbnail": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "content": {
+      "type": "blocks"
+    },
+    "video": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["videos", "files"]
+    },
+    "quiz": {
+      "type": "component",
+      "repeatable": true,
+      "component": "quiz.question"
+    },
+    "typeOfExperience": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::type-of-experience.type-of-experience",
+      "inversedBy": "experiences"
+    },
+    "topics": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::topic.topic",
+      "mappedBy": "experiences"
+    }
+  }
+}

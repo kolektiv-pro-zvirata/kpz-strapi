@@ -1,6 +1,15 @@
+# pnpm 11+ (lokální dev) používá allowBuilds
 allowBuilds:
-  '@swc/core': set this to true or false
-  better-sqlite3: set this to true or false
-  core-js-pure: set this to true or false
-  esbuild: set this to true or false
-  sharp: set this to true or false
+  '@swc/core': true
+  better-sqlite3: true
+  core-js-pure: true
+  esbuild: true
+  sharp: true
+
+# pnpm 10 (CI, viz .github/workflows/verify.yml) používá onlyBuiltDependencies
+onlyBuiltDependencies:
+  - '@swc/core'
+  - better-sqlite3
+  - core-js-pure
+  - esbuild
+  - sharp

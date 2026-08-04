@@ -1,0 +1,46 @@
+{
+  "kind": "collectionType",
+  "collectionName": "main_categories",
+  "info": {
+    "singularName": "main-category",
+    "pluralName": "main-categories",
+    "displayName": "Main Category",
+    "description": "Top-level category shown on the home screen (Cooking, Nutrition, Ethics, Ecology)"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name"
+    },
+    "description": {
+      "type": "string"
+    },
+    "color": {
+      "type": "string"
+    },
+    "tint": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "string"
+    },
+    "order": {
+      "type": "integer"
+    },
+    "topics": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::topic.topic",
+      "mappedBy": "mainCategory"
+    }
+  }
+}
