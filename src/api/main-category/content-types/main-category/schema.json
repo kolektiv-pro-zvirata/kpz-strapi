@@ -19,19 +19,37 @@
     },
     "slug": {
       "type": "uid",
-      "targetField": "name"
+      "targetField": "name",
+      "required": true
     },
     "description": {
       "type": "string"
     },
     "color": {
-      "type": "string"
-    },
-    "tint": {
-      "type": "string"
+      "type": "enumeration",
+      "enum": [
+        "brown",
+        "green",
+        "purple",
+        "teal",
+        "orange",
+        "blue",
+        "pink"
+      ],
+      "default": "green"
     },
     "icon": {
-      "type": "string"
+      "type": "enumeration",
+      "enum": [
+        "fork",
+        "leaf",
+        "heart",
+        "globe",
+        "medkit",
+        "people",
+        "sparkles"
+      ],
+      "default": "leaf"
     },
     "order": {
       "type": "integer"

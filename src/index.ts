@@ -11,6 +11,14 @@ const PUBLIC_READABLE_UIDS = [
 ];
 const PUBLIC_ACTIONS = ['find', 'findOne'];
 
+// Signed-in users may append their progress events and read back their own
+// (the controller takes the user from the JWT in both cases, so they can never
+// touch anyone else's history). `me` restores progress after a reinstall or on
+// a second device.
+const AUTHENTICATED_GRANTS = [
+  { uid: 'api::progress-event.progress-event', actions: ['create', 'me'] },
+];
+
 export default {
   /**
    * An asynchronous register function that runs before
@@ -25,26 +33,32 @@ export default {
    * clicked manually in the admin.
    */
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
-    const publicRole = await strapi
-      .query('plugin::users-permissions.role')
-      .findOne({ where: { type: 'public' } });
+    const grant = async (roleType: string, uid: string, actions: string[]) => {
+      const role = await strapi
+        .query('plugin::users-permissions.role')
+        .findOne({ where: { type: roleType } });
+      if (!role) return;
 
-    if (!publicRole) return;
-
-    for (const uid of PUBLIC_READABLE_UIDS) {
-      for (const action of PUBLIC_ACTIONS) {
+      for (const action of actions) {
         const permAction = `${uid}.${action}`;
         const existing = await strapi
           .query('plugin::users-permissions.permission')
-          .findOne({ where: { action: permAction, role: publicRole.id } });
+          .findOne({ where: { action: permAction, role: role.id } });
 
         if (!existing) {
           await strapi.query('plugin::users-permissions.permission').create({
-            data: { action: permAction, role: publicRole.id },
+            data: { action: permAction, role: role.id },
           });
-          strapi.log.info(`[bootstrap] granted public permission: ${permAction}`);
+          strapi.log.info(`[bootstrap] granted ${roleType} permission: ${permAction}`);
         }
       }
+    };
+
+    for (const uid of PUBLIC_READABLE_UIDS) {
+      await grant('public', uid, PUBLIC_ACTIONS);
+    }
+    for (const { uid, actions } of AUTHENTICATED_GRANTS) {
+      await grant('authenticated', uid, actions);
     }
   },
 };

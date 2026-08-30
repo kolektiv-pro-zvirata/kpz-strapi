@@ -1,0 +1,66 @@
+##
+## Roští.cz Docker Stack — Strapi 5 + PostgreSQL 16.
+##
+## Conventions from docs.rosti.cz/cs/stacks:
+##  - Images come from a registry (`build:` is NOT supported in stacks). Build
+##    the Strapi image locally and push it with `rosticli stacks push`, or via
+##    GitHub Actions -> GHCR, then set STRAPI_IMAGE in .env to that tag.
+##  - Persistent data uses bind-mounted directories (./pgsql-data,
+##    ./strapi-uploads), not named volumes — easier to back up and migrate.
+##  - HTTPS and the domain are handled by Roští's systemic proxy (the "Proxy"
+##    tab of the stack). The app only needs to listen on port 80 in the stack.
+##  - Do NOT add the `mgm` container here — Roští manages it separately.
+##
+## See DEPLOY.rosti.md for the full step-by-step.
+##
+
+services:
+  strapi:
+    image: ${STRAPI_IMAGE}
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 1337
+      # Public HTTPS URL of the stack — Strapi needs it because it runs behind
+      # Roští's reverse proxy. Set the domain in the Proxy tab first.
+      PUBLIC_URL: ${PUBLIC_URL}
+      # Secrets — generate fresh values for production (see .env.production.example).
+      APP_KEYS: ${APP_KEYS}
+      API_TOKEN_SALT: ${API_TOKEN_SALT}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
+      TRANSFER_TOKEN_SALT: ${TRANSFER_TOKEN_SALT}
+      JWT_SECRET: ${JWT_SECRET}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      # Database — talks to the postgres service below over the stack network.
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ${POSTGRES_DB}
+      DATABASE_USERNAME: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_SSL: "false"
+    ports:
+      # Roští's proxy forwards the stack's public traffic to port 80.
+      - "80:1337"
+    volumes:
+      # Uploaded media survives redeploys on this host directory.
+      - ./strapi-uploads:/opt/app/public/uploads
+
+  postgres:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./pgsql-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

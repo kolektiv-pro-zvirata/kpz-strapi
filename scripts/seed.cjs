@@ -48,6 +48,16 @@ const TYPE_LABELS = {
 // All type-of-experience records we want to exist (Task has no source data yet).
 const ALL_TYPES = ['Recipe', 'Video', 'Quiz', 'Task'];
 
+// Maps the app's category names to the Strapi color + icon enums (the FE maps
+// these enum values to actual colors / SF symbols) plus the list description.
+// Unknown categories → schema defaults + empty description.
+const APPEARANCE_BY_NAME = {
+  Vaření: { color: 'brown', icon: 'fork', description: 'Recepty a tipy do kuchyně' },
+  Výživa: { color: 'green', icon: 'leaf', description: 'Bílkoviny, vitamíny a zdraví' },
+  Etika: { color: 'purple', icon: 'heart', description: 'Proč na zvířatech záleží' },
+  Ekologie: { color: 'teal', icon: 'globe', description: 'Dopady stravy na planetu' },
+};
+
 const MIME = {
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
@@ -150,14 +160,13 @@ async function main() {
     const categoryIdByName = {};
     for (let i = 0; i < content.categories.length; i++) {
       const cat = content.categories[i];
-      const v = (content.categoryVisuals && content.categoryVisuals[cat.name]) || {};
+      const look = APPEARANCE_BY_NAME[cat.name] || { color: 'green', icon: 'leaf' };
       const doc = await upsert(UIDS.category, { slug: slugify(cat.name) }, {
         name: cat.name,
         slug: slugify(cat.name),
-        description: v.description || null,
-        color: v.color || null,
-        tint: v.tint || null,
-        icon: v.symbol || null,
+        description: look.description || null,
+        color: look.color,
+        icon: look.icon,
         order: i,
       });
       categoryIdByName[cat.name] = doc.documentId;

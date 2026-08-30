@@ -466,13 +466,14 @@ export interface ApiExperienceExperience extends Struct.CollectionTypeSchema {
     name: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     quiz: Schema.Attribute.Component<'quiz.question', true>;
-    slug: Schema.Attribute.UID<'name'>;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     thumbnail: Schema.Attribute.Media<'images'>;
     topics: Schema.Attribute.Relation<'manyToMany', 'api::topic.topic'>;
     typeOfExperience: Schema.Attribute.Relation<
       'manyToOne',
       'api::type-of-experience.type-of-experience'
-    >;
+    > &
+      Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -529,12 +530,18 @@ export interface ApiMainCategoryMainCategory
     draftAndPublish: true;
   };
   attributes: {
-    color: Schema.Attribute.String;
+    color: Schema.Attribute.Enumeration<
+      ['brown', 'green', 'purple', 'teal', 'orange', 'blue', 'pink']
+    > &
+      Schema.Attribute.DefaultTo<'green'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     description: Schema.Attribute.String;
-    icon: Schema.Attribute.String;
+    icon: Schema.Attribute.Enumeration<
+      ['fork', 'leaf', 'heart', 'globe', 'medkit', 'people', 'sparkles']
+    > &
+      Schema.Attribute.DefaultTo<'leaf'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -546,8 +553,7 @@ export interface ApiMainCategoryMainCategory
       Schema.Attribute.Unique;
     order: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
-    slug: Schema.Attribute.UID<'name'>;
-    tint: Schema.Attribute.String;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     topics: Schema.Attribute.Relation<'oneToMany', 'api::topic.topic'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -578,11 +584,65 @@ export interface ApiNewsNews extends Struct.CollectionTypeSchema {
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::news.news'> &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    slug: Schema.Attribute.UID<'title'>;
+    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiProgressEventProgressEvent
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'progress_events';
+  info: {
+    description: "Append-only log of user actions in the app (experience completed, progress reset), so each user's full history stays visible";
+    displayName: 'Progress event';
+    pluralName: 'progress-events';
+    singularName: 'progress-event';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    clientEventId: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    experience: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::experience.experience'
+    >;
+    experienceSlug: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::progress-event.progress-event'
+    > &
+      Schema.Attribute.Private;
+    occurredAt: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    platform: Schema.Attribute.String;
+    points: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    publishedAt: Schema.Attribute.DateTime;
+    type: Schema.Attribute.Enumeration<['completed', 'reset']> &
+      Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    > &
+      Schema.Attribute.Required;
   };
 }
 
@@ -616,7 +676,7 @@ export interface ApiTopicTopic extends Struct.CollectionTypeSchema {
     >;
     order: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
-    slug: Schema.Attribute.UID<'title'>;
+    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -656,7 +716,7 @@ export interface ApiTypeOfExperienceTypeOfExperience
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
     publishedAt: Schema.Attribute.DateTime;
-    slug: Schema.Attribute.UID<'name'>;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1178,6 +1238,7 @@ declare module '@strapi/strapi' {
       'api::level.level': ApiLevelLevel;
       'api::main-category.main-category': ApiMainCategoryMainCategory;
       'api::news.news': ApiNewsNews;
+      'api::progress-event.progress-event': ApiProgressEventProgressEvent;
       'api::topic.topic': ApiTopicTopic;
       'api::type-of-experience.type-of-experience': ApiTypeOfExperienceTypeOfExperience;
       'plugin::content-releases.release': PluginContentReleasesRelease;

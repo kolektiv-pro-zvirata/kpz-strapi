@@ -77,7 +77,6 @@ function loadAppContent(appDir) {
   const dataFile = path.join(appDir, 'src/content/generated/data.ts');
   const extraFile = path.join(appDir, 'src/content/extra.ts');
   const newsFile = path.join(appDir, 'src/state/news.ts');
-  const visualsFile = path.join(appDir, 'src/constants/category-visuals.ts');
   const levelsFile = path.join(appDir, 'src/constants/levels.ts');
 
   for (const f of [dataFile, newsFile]) {
@@ -102,15 +101,6 @@ function loadAppContent(appDir) {
 
   const news = readLiteral(newsFile, 'NEWS');
 
-  let categoryVisuals = {};
-  if (fs.existsSync(visualsFile)) {
-    try {
-      categoryVisuals = readLiteral(visualsFile, 'CATEGORY_VISUALS');
-    } catch (e) {
-      console.warn(`  ⚠ Could not read category-visuals.ts: ${e.message}`);
-    }
-  }
-
   let levelNames = [];
   let pointsPerLevel = 4;
   if (fs.existsSync(levelsFile)) {
@@ -132,7 +122,6 @@ function loadAppContent(appDir) {
     experiences: allExperiences,
     topicExtraExperiences,
     news,
-    categoryVisuals,
     levelNames,
     pointsPerLevel,
   };

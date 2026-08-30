@@ -27,7 +27,10 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
     config: {
       jwtManagement: 'refresh',
       sessions: {
-        httpOnly: true,
+        // The API's only client is the React Native app, which has no cookie
+        // jar — the rotated refresh token must come back in the response body
+        // (httpOnly cookies are a browser-only protection).
+        httpOnly: false,
       },
     },
   },

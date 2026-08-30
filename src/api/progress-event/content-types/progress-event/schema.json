@@ -1,0 +1,52 @@
+{
+  "kind": "collectionType",
+  "collectionName": "progress_events",
+  "info": {
+    "singularName": "progress-event",
+    "pluralName": "progress-events",
+    "displayName": "Progress event",
+    "description": "Append-only log of user actions in the app (experience completed, progress reset), so each user's full history stays visible"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "required": true
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": ["completed", "reset"],
+      "required": true
+    },
+    "experience": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::experience.experience"
+    },
+    "experienceSlug": {
+      "type": "string"
+    },
+    "points": {
+      "type": "integer",
+      "required": true,
+      "min": 0
+    },
+    "occurredAt": {
+      "type": "datetime",
+      "required": true
+    },
+    "clientEventId": {
+      "type": "string",
+      "unique": true,
+      "required": true
+    },
+    "platform": {
+      "type": "string"
+    }
+  }
+}

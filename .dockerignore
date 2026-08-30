@@ -1,0 +1,19 @@
+# Rebuilt inside the image
+node_modules
+dist
+build
+.strapi
+.cache
+
+# Never bake local data / secrets / uploads into the image
+.env
+.env.*
+.tmp
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Repo noise
+.git
+.github
+*.log
+.DS_Store
