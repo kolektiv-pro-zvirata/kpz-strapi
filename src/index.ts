@@ -5,7 +5,6 @@ const PUBLIC_READABLE_UIDS = [
   'api::main-category.main-category',
   'api::topic.topic',
   'api::experience.experience',
-  'api::type-of-experience.type-of-experience',
   'api::news.news',
   'api::level.level',
 ];

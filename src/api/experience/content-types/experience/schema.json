@@ -25,34 +25,78 @@
       "type": "media",
       "multiple": false,
       "required": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "content": {
       "type": "blocks"
     },
     "video": {
       "type": "media",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "typeOfExperience"
+            },
+            "Video"
+          ]
+        }
+      },
       "multiple": false,
       "required": false,
-      "allowedTypes": ["videos", "files"]
+      "allowedTypes": [
+        "videos",
+        "files"
+      ]
     },
     "quiz": {
       "type": "component",
-      "repeatable": true,
-      "component": "quiz.question"
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "typeOfExperience"
+            },
+            "Quiz"
+          ]
+        }
+      },
+      "component": "quiz.question",
+      "repeatable": true
     },
     "typeOfExperience": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::type-of-experience.type-of-experience",
-      "inversedBy": "experiences",
-      "required": true
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "Recipe",
+        "Video",
+        "Quiz",
+        "Task"
+      ]
     },
     "topics": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::topic.topic",
       "mappedBy": "experiences"
+    },
+    "prepTime": {
+      "type": "enumeration",
+      "enum": [
+        "Max30Min",
+        "Max1Hour",
+        "Over1Hour"
+      ]
+    },
+    "course": {
+      "type": "enumeration",
+      "enum": [
+        "Breakfast",
+        "Lunch",
+        "Dinner"
+      ]
     }
   }
 }

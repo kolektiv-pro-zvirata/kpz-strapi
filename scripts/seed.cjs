@@ -9,7 +9,7 @@
  * It:
  *   1. boots Strapi programmatically,
  *   2. uploads referenced images/videos from kpz-app/assets/content into the media library,
- *   3. creates Type of Experience, Main Category, Experience, Topic, News and Level entries,
+ *   3. creates Main Category, Experience, Topic, News and Level entries,
  *   4. wires up all relations, and publishes everything.
  *
  * Idempotent: entries are matched by slug (or a natural key) and updated in place,
@@ -30,7 +30,6 @@ const ASSETS_DIR = path.join(APP_DIR, 'assets', 'content');
 const FRESH = ['1', 'true', 'yes'].includes(String(process.env.SEED_FRESH).toLowerCase());
 
 const UIDS = {
-  type: 'api::type-of-experience.type-of-experience',
   category: 'api::main-category.main-category',
   experience: 'api::experience.experience',
   topic: 'api::topic.topic',
@@ -38,15 +37,17 @@ const UIDS = {
   level: 'api::level.level',
 };
 
-/** Map the app's experience `type` to a Type of Experience name. */
+/**
+ * Map the app's experience `type` to the `typeOfExperience` enum on Experience.
+ * Keep in sync with the enum in the Experience schema and with
+ * `EXPERIENCE_TYPES` in kpz-app's src/constants/experience-types.ts.
+ */
 const TYPE_LABELS = {
   markdown: 'Recipe',
   video: 'Video',
   quiz: 'Quiz',
   task: 'Task',
 };
-// All type-of-experience records we want to exist (Task has no source data yet).
-const ALL_TYPES = ['Recipe', 'Video', 'Quiz', 'Task'];
 
 // Maps the app's category names to the Strapi color + icon enums (the FE maps
 // these enum values to actual colors / SF symbols) plus the list description.
@@ -144,18 +145,7 @@ async function main() {
       return app.documents(uid).create({ data, status: 'published' });
     }
 
-    // 1) Type of Experience -------------------------------------------------
-    console.log('› Type of Experience…');
-    const typeIdByLabel = {};
-    for (const label of ALL_TYPES) {
-      const doc = await upsert(UIDS.type, { slug: slugify(label) }, {
-        name: label,
-        slug: slugify(label),
-      });
-      typeIdByLabel[label] = doc.documentId;
-    }
-
-    // 2) Main Categories ----------------------------------------------------
+    // 1) Main Categories ----------------------------------------------------
     console.log('› Main Categories…');
     const categoryIdByName = {};
     for (let i = 0; i < content.categories.length; i++) {
@@ -172,7 +162,7 @@ async function main() {
       categoryIdByName[cat.name] = doc.documentId;
     }
 
-    // 3) Experiences --------------------------------------------------------
+    // 2) Experiences --------------------------------------------------------
     console.log('› Experiences…');
     const experienceIdByAppId = {};
     for (const [appId, exp] of Object.entries(content.experiences)) {
@@ -198,12 +188,12 @@ async function main() {
         thumbnail: thumbnailId,
         video: videoId,
         quiz,
-        typeOfExperience: typeIdByLabel[label],
+        typeOfExperience: label,
       });
       experienceIdByAppId[appId] = doc.documentId;
     }
 
-    // 4) Topics -------------------------------------------------------------
+    // 3) Topics -------------------------------------------------------------
     console.log('› Topics…');
     for (let ci = 0; ci < content.categories.length; ci++) {
       const cat = content.categories[ci];

@@ -454,6 +454,7 @@ export interface ApiExperienceExperience extends Struct.CollectionTypeSchema {
   };
   attributes: {
     content: Schema.Attribute.Blocks;
+    course: Schema.Attribute.Enumeration<['Breakfast', 'Lunch', 'Dinner']>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -464,14 +465,16 @@ export interface ApiExperienceExperience extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
+    prepTime: Schema.Attribute.Enumeration<
+      ['Max30Min', 'Max1Hour', 'Over1Hour']
+    >;
     publishedAt: Schema.Attribute.DateTime;
     quiz: Schema.Attribute.Component<'quiz.question', true>;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     thumbnail: Schema.Attribute.Media<'images'>;
     topics: Schema.Attribute.Relation<'manyToMany', 'api::topic.topic'>;
-    typeOfExperience: Schema.Attribute.Relation<
-      'manyToOne',
-      'api::type-of-experience.type-of-experience'
+    typeOfExperience: Schema.Attribute.Enumeration<
+      ['Recipe', 'Video', 'Quiz', 'Task']
     > &
       Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
@@ -678,45 +681,6 @@ export interface ApiTopicTopic extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
     title: Schema.Attribute.String & Schema.Attribute.Required;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiTypeOfExperienceTypeOfExperience
-  extends Struct.CollectionTypeSchema {
-  collectionName: 'type_of_experiences';
-  info: {
-    description: 'Kind of experience: recipe, video, quiz or task';
-    displayName: 'Type of Experience';
-    pluralName: 'type-of-experiences';
-    singularName: 'type-of-experience';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    description: Schema.Attribute.Text;
-    experiences: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::experience.experience'
-    >;
-    icon: Schema.Attribute.String;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::type-of-experience.type-of-experience'
-    > &
-      Schema.Attribute.Private;
-    name: Schema.Attribute.String &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
-    publishedAt: Schema.Attribute.DateTime;
-    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1240,7 +1204,6 @@ declare module '@strapi/strapi' {
       'api::news.news': ApiNewsNews;
       'api::progress-event.progress-event': ApiProgressEventProgressEvent;
       'api::topic.topic': ApiTopicTopic;
-      'api::type-of-experience.type-of-experience': ApiTypeOfExperienceTypeOfExperience;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;
