@@ -250,6 +250,17 @@ async function main() {
       }
     }
 
+    // 7) Point Settings -----------------------------------------------------
+    // Seeded at 1 so seeding never silently changes the scoring; real values
+    // are set in the admin (Point Settings).
+    console.log('› Point Settings…');
+    await upsert('api::point-setting.point-setting', {}, {
+      recipe: 1,
+      video: 1,
+      quiz: 1,
+      task: 1,
+    });
+
     console.log('✓ Seed complete.');
   } finally {
     await app.destroy();

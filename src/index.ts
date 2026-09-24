@@ -9,6 +9,11 @@ const PUBLIC_READABLE_UIDS = [
   'api::level.level',
 ];
 const PUBLIC_ACTIONS = ['find', 'findOne'];
+// Single types only ever expose `find`.
+const PUBLIC_READABLE_SINGLE_UIDS = [
+  'api::point-setting.point-setting',
+  'api::consent.consent',
+];
 
 // Signed-in users may append their progress events and read back their own
 // (the controller takes the user from the JWT in both cases, so they can never
@@ -16,6 +21,9 @@ const PUBLIC_ACTIONS = ['find', 'findOne'];
 // a second device.
 const AUTHENTICATED_GRANTS = [
   { uid: 'api::progress-event.progress-event', actions: ['create', 'me'] },
+  // Account deletion. `destroy` stays ungranted on purpose — see the
+  // users-permissions extension.
+  { uid: 'plugin::users-permissions.user', actions: ['deleteMe'] },
 ];
 
 export default {
@@ -55,6 +63,9 @@ export default {
 
     for (const uid of PUBLIC_READABLE_UIDS) {
       await grant('public', uid, PUBLIC_ACTIONS);
+    }
+    for (const uid of PUBLIC_READABLE_SINGLE_UIDS) {
+      await grant('public', uid, ['find']);
     }
     for (const { uid, actions } of AUTHENTICATED_GRANTS) {
       await grant('authenticated', uid, actions);

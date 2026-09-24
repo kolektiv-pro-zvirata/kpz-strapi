@@ -32,6 +32,10 @@
     "content": {
       "type": "blocks"
     },
+    "points": {
+      "type": "integer",
+      "min": 0
+    },
     "video": {
       "type": "media",
       "conditions": {

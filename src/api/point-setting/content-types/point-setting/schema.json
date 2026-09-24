@@ -1,0 +1,40 @@
+{
+  "kind": "singleType",
+  "collectionName": "point_settings",
+  "info": {
+    "singularName": "point-setting",
+    "pluralName": "point-settings",
+    "displayName": "Point Settings",
+    "description": "Default points awarded per experience type; an experience may override its own value"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "recipe": {
+      "type": "integer",
+      "required": true,
+      "default": 1,
+      "min": 0
+    },
+    "video": {
+      "type": "integer",
+      "required": true,
+      "default": 1,
+      "min": 0
+    },
+    "quiz": {
+      "type": "integer",
+      "required": true,
+      "default": 1,
+      "min": 0
+    },
+    "task": {
+      "type": "integer",
+      "required": true,
+      "default": 1,
+      "min": 0
+    }
+  }
+}

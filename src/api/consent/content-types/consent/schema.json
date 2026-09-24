@@ -1,0 +1,23 @@
+{
+  "kind": "singleType",
+  "collectionName": "consents",
+  "info": {
+    "singularName": "consent",
+    "pluralName": "consents",
+    "displayName": "Consent Terms",
+    "description": "Data-processing terms shown in a dialog on the registration screen"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "content": {
+      "type": "blocks"
+    }
+  }
+}

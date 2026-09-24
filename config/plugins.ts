@@ -32,6 +32,50 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
         // (httpOnly cookies are a browser-only protection).
         httpOnly: false,
       },
+      callback: {
+        /**
+         * Where `/api/connect/:provider?callback=…` is allowed to send the
+         * browser once the OAuth dance is done.
+         *
+         * The stock validator compares `origin` and `pathname`. That works for
+         * https callbacks but silently stops validating for custom schemes:
+         * `new URL('kpzapp://auth')` and `new URL('evil://auth')` both yield
+         * origin `null` and an empty pathname, so they compare equal and any
+         * attacker-supplied scheme would be handed the access token.
+         *
+         * So: https callbacks keep origin+pathname matching, and app callbacks
+         * must match one of the prefixes below exactly.
+         *
+         *   kpzapp://  — the built app (see `scheme` in app.json)
+         *   exp://     — Expo Go during development, hence dev-only
+         */
+        validate(callback: string, provider: { callback?: string }) {
+          const APP_PREFIXES = ['kpzapp://'];
+          if (process.env.NODE_ENV !== 'production') {
+            APP_PREFIXES.push('exp://');
+          }
+
+          if (APP_PREFIXES.some((prefix) => callback.startsWith(prefix))) return;
+
+          let target: URL;
+          let configured: URL;
+          try {
+            target = new URL(callback);
+            configured = new URL(provider.callback ?? '');
+          } catch {
+            throw new Error('The callback is not a valid URL');
+          }
+          if (target.origin === 'null' || configured.origin === 'null') {
+            throw new Error('Forbidden callback provided: unknown scheme.');
+          }
+          if (target.origin !== configured.origin) {
+            throw new Error("Forbidden callback provided: origins don't match.");
+          }
+          if (target.pathname !== configured.pathname) {
+            throw new Error("Forbidden callback provided: pathname doesn't match.");
+          }
+        },
+      },
     },
   },
   upload: {
