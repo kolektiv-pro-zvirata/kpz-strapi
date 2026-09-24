@@ -16,7 +16,7 @@
 
 services:
   strapi:
-    image: ${STRAPI_IMAGE}
+    image: app:latest
     restart: always
     depends_on:
       postgres:
