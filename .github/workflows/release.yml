@@ -1,0 +1,156 @@
+name: Release of a new version
+
+# When this workflow should run
+on:
+  push:
+    branches: [ main ]
+
+  # Manual trigger — always available
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release'
+        required: true
+        default: 'latest'
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Permissions needed to push to GitHub Container Registry
+    permissions:
+      contents: read
+      packages: write
+    env:
+      # Image name derived from the repository path
+      IMAGE: ghcr.io/kolektiv-pro-zvirata/kpz-strapi
+      # Endpoint to notify Rosti to pull and restart after a push
+      PULL_ENDPOINT: ${{ secrets.PULL_ENDPOINT }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Verify PULL_ENDPOINT secret is set (only checked when using a secret)
+      - name: Test that PULL_ENDPOINT is set
+        run: test -n "$PULL_ENDPOINT" || { echo "Secret PULL_ENDPOINT is not set!"; exit 1; }
+
+      # Set image tag to short commit SHA on push
+      - name: Get image tag on push
+        if: github.event_name == 'push'
+        run: echo "TAG_NAME=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
+      # Set image tag to git tag on release
+      - name: Get image tag on release
+        if: github.event_name == 'release'
+        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+      # Set image tag to the chosen string on manual trigger
+      - name: Get image tag on workflow_dispatch
+        if: github.event_name == 'workflow_dispatch'
+        run: echo "TAG_NAME=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+
+      # Debug output
+      - name: Debug info
+        run: |
+          echo "Username: ${{ github.actor }}"
+          echo "Image: $IMAGE"
+          echo "Image tag: ${{ env.TAG_NAME }}"
+
+      # Log in to GitHub Container Registry
+      - name: Log in to registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      # Build image
+      - name: Build
+        run: docker build -t $IMAGE:${{ env.TAG_NAME }} .
+
+      # Tag as latest
+      - name: Tag latest
+        run: docker tag $IMAGE:${{ env.TAG_NAME }} $IMAGE:latest
+
+      # Push versioned tag
+      - name: Push
+        run: docker push $IMAGE:${{ env.TAG_NAME }}
+
+      # Push latest tag
+      - name: Push latest
+        run: docker push $IMAGE:latest
+
+      # Tell Rosti to pull the new image and restart the stack
+      - name: Start Rosti Pull+Up
+        run: |
+          set -eu
+          response_file=$(mktemp)
+          trap 'rm -f "$response_file"' EXIT
+          if ! http_status=$(curl --silent --show-error --connect-timeout 30 --max-time 60 --output "$response_file" --write-out '%{http_code}' "$PULL_ENDPOINT"); then
+            echo "Could not start Pull+Up."
+            exit 1
+          fi
+          if ! status=$(jq -r '.status // empty' "$response_file"); then
+            echo "Pull+Up start endpoint returned invalid JSON."
+            exit 1
+          fi
+          case "$http_status:$status" in
+            200:running|202:running)
+              echo "Pull+Up started."
+              ;;
+            409:running)
+              echo "A Pull+Up job is already running. Waiting for it to finish."
+              ;;
+            *)
+              message=$(jq -r '.message // "Pull+Up could not be started."' "$response_file")
+              echo "Pull+Up could not be started: $message"
+              exit 1
+              ;;
+          esac
+
+      - name: Wait for Rosti deployment
+        timeout-minutes: 15
+        run: |
+          set -eu
+          status_endpoint="${PULL_ENDPOINT%/}/status"
+          deadline=$(( $(date +%s) + 900 ))
+          response_file=$(mktemp)
+          trap 'rm -f "$response_file"' EXIT
+
+          while [ "$(date +%s)" -lt "$deadline" ]; do
+            if ! http_status=$(curl --silent --show-error --connect-timeout 30 --max-time 60 --output "$response_file" --write-out '%{http_code}' "$status_endpoint"); then
+              echo "Could not retrieve Pull+Up status."
+              exit 1
+            fi
+            if [ "$http_status" != "200" ]; then
+              message=$(jq -r '.message // "Pull+Up status could not be retrieved."' "$response_file")
+              echo "Pull+Up status request failed: $message"
+              exit 1
+            fi
+            if ! status=$(jq -r '.status // empty' "$response_file"); then
+              echo "Pull+Up status endpoint returned invalid JSON."
+              exit 1
+            fi
+            message=$(jq -r '.message // "Pull+Up status updated."' "$response_file")
+
+            case "$status" in
+              running)
+                echo "$message"
+                sleep 10
+                ;;
+              succeeded)
+                echo "$message"
+                exit 0
+                ;;
+              failed|timed_out)
+                echo "$message"
+                echo "--- STDOUT ---"
+                jq -r '.compose_result.stdout // ""' "$response_file"
+                echo "--- STDERR ---"
+                jq -r '.compose_result.stderr // ""' "$response_file"
+                echo "--- ERROR ---"
+                jq -r '.compose_error // ""' "$response_file"
+                exit 1
+                ;;
+              *)
+                echo "Pull+Up returned an unexpected status: $status"
+                exit 1
+                ;;
+            esac
+          done
+
+          echo "Pull+Up did not finish within 15 minutes."
+          exit 1

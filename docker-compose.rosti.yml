@@ -16,7 +16,7 @@
 
 services:
   strapi:
-    image: app:latest
+    image: ghcr.io/kolektiv-pro-zvirata/kpz-strapi:latest
     restart: always
     depends_on:
       postgres:
