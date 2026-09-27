@@ -6,10 +6,14 @@
   },
   "options": {},
   "attributes": {
+    "title": {
+      "type": "string"
+    },
     "typeOfReward": {
       "type": "enumeration",
       "enum": [
-        "Video"
+        "Video",
+        "Image"
       ],
       "default": "Video",
       "required": true
@@ -29,6 +33,24 @@
               "var": "typeOfReward"
             },
             "Video"
+          ]
+        }
+      }
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ],
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "typeOfReward"
+            },
+            "Image"
           ]
         }
       }

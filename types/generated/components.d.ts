@@ -7,7 +7,9 @@ export interface LevelReward extends Struct.ComponentSchema {
     displayName: 'Reward';
   };
   attributes: {
-    typeOfReward: Schema.Attribute.Enumeration<['Video']> &
+    image: Schema.Attribute.Media<'images'>;
+    title: Schema.Attribute.String;
+    typeOfReward: Schema.Attribute.Enumeration<['Video', 'Image']> &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'Video'>;
     video: Schema.Attribute.Media<'videos' | 'files'>;
