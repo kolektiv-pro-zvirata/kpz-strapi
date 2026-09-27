@@ -495,6 +495,7 @@ export interface ApiExperienceExperience extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
+    nutrition: Schema.Attribute.Component<'recipe.nutrition', false>;
     points: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
         {
@@ -507,6 +508,13 @@ export interface ApiExperienceExperience extends Struct.CollectionTypeSchema {
     >;
     publishedAt: Schema.Attribute.DateTime;
     quiz: Schema.Attribute.Component<'quiz.question', true>;
+    servings: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     thumbnail: Schema.Attribute.Media<'images'>;
     topics: Schema.Attribute.Relation<'manyToMany', 'api::topic.topic'>;
@@ -551,6 +559,7 @@ export interface ApiLevelLevel extends Struct.CollectionTypeSchema {
     name: Schema.Attribute.String & Schema.Attribute.Required;
     pointsRequired: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
+    reward: Schema.Attribute.Component<'level.reward', false>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

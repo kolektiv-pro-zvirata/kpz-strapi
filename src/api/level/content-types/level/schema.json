@@ -24,6 +24,11 @@
     },
     "pointsRequired": {
       "type": "integer"
+    },
+    "reward": {
+      "type": "component",
+      "component": "level.reward",
+      "repeatable": false
     }
   }
 }

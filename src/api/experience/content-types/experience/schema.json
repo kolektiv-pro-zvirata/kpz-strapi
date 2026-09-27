@@ -88,6 +88,16 @@
     },
     "prepTime": {
       "type": "enumeration",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "typeOfExperience"
+            },
+            "Recipe"
+          ]
+        }
+      },
       "enum": [
         "Max30Min",
         "Max1Hour",
@@ -96,11 +106,50 @@
     },
     "course": {
       "type": "enumeration",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "typeOfExperience"
+            },
+            "Recipe"
+          ]
+        }
+      },
       "enum": [
         "Breakfast",
         "Lunch",
         "Dinner"
       ]
+    },
+    "servings": {
+      "type": "integer",
+      "min": 1,
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "typeOfExperience"
+            },
+            "Recipe"
+          ]
+        }
+      }
+    },
+    "nutrition": {
+      "type": "component",
+      "component": "recipe.nutrition",
+      "repeatable": false,
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "typeOfExperience"
+            },
+            "Recipe"
+          ]
+        }
+      }
     }
   }
 }

@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_recipe_nutrient_items",
+  "info": {
+    "displayName": "Nutrient Item",
+    "description": "A sub-value nested under a nutrient section (e.g. \"Cukry\" under Sacharidy)"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "value": {
+      "type": "decimal",
+      "required": true
+    },
+    "unit": {
+      "type": "string",
+      "default": "g"
+    }
+  }
+}

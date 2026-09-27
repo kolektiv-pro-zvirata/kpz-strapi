@@ -1,0 +1,37 @@
+{
+  "collectionName": "components_recipe_nutrient_sections",
+  "info": {
+    "displayName": "Nutrient Section",
+    "description": "One row of the nutrition table (e.g. Bílkoviny, Sacharidy, Tuky, Vláknina, Sůl), with optional nested sub-items"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "value": {
+      "type": "decimal",
+      "required": true
+    },
+    "unit": {
+      "type": "string",
+      "default": "g"
+    },
+    "color": {
+      "type": "enumeration",
+      "enum": [
+        "red",
+        "blue",
+        "yellow",
+        "green",
+        "purple"
+      ]
+    },
+    "items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "recipe.nutrient-item"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "collectionName": "components_level_rewards",
+  "info": {
+    "displayName": "Reward",
+    "description": "What the user unlocks at this level. Which fields show up depends on typeOfReward, the same conditional pattern as Experience's typeOfExperience."
+  },
+  "options": {},
+  "attributes": {
+    "typeOfReward": {
+      "type": "enumeration",
+      "enum": [
+        "Video"
+      ],
+      "default": "Video",
+      "required": true
+    },
+    "video": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "videos",
+        "files"
+      ],
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "typeOfReward"
+            },
+            "Video"
+          ]
+        }
+      }
+    }
+  }
+}

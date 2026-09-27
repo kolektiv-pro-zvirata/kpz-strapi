@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_recipe_nutritions",
+  "info": {
+    "displayName": "Nutrition",
+    "description": "Recipe nutrition facts: total calories plus a dynamic list of nutrient sections. kJ is not stored — the app computes it from kcal."
+  },
+  "options": {},
+  "attributes": {
+    "caloriesKcal": {
+      "type": "integer",
+      "required": true,
+      "min": 0
+    },
+    "sections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "recipe.nutrient-section"
+    }
+  }
+}
