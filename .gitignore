@@ -123,6 +123,7 @@ coverage
 
 .env
 .env.production
+.env.production-*
 license.txt
 exports
 .strapi

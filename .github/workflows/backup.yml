@@ -1,0 +1,38 @@
+name: Nightly database backup
+
+# Dumps the production Postgres database and keeps it as a downloadable
+# workflow artifact for 90 days — independent of Rosti's own (3-day,
+# manual-only) snapshot feature. Media files live on the bind-mounted
+# strapi-uploads/ directory, not in Postgres, so this stays small.
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # 02:00 UTC daily
+  workflow_dispatch: {} # allows a manual run from the Actions tab
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up SSH access to the production stack
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.ROSTI_PRODUCTION_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p 29197 ssh.rosti.cz >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Dump production database
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -p 29197 root@ssh.rosti.cz \
+            "docker exec stack-postgres-1 sh -c 'pg_dump -U \"\$POSTGRES_USER\" \"\$POSTGRES_DB\"'" \
+            > "kpz-strapi-production-$(date +%F).sql"
+
+      - name: Verify the dump is non-empty
+        run: test -s kpz-strapi-production-*.sql
+
+      - name: Upload as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-backup-${{ github.run_id }}
+          path: kpz-strapi-production-*.sql
+          retention-days: 90
