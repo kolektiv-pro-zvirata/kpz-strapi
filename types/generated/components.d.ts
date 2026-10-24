@@ -49,30 +49,28 @@ export interface QuizQuestion extends Struct.ComponentSchema {
   };
 }
 
-export interface RecipeNutrientItem extends Struct.ComponentSchema {
-  collectionName: 'components_recipe_nutrient_items';
+export interface RecipeCourseTag extends Struct.ComponentSchema {
+  collectionName: 'components_recipe_course_tags';
   info: {
-    description: 'A sub-value nested under a nutrient section (e.g. "Cukry" under Sacharidy)';
-    displayName: 'Nutrient Item';
+    description: 'One meal a recipe is for \u2014 repeatable on Experience so a recipe can be e.g. both Breakfast and Lunch.';
+    displayName: 'Course Tag';
   };
   attributes: {
-    label: Schema.Attribute.String & Schema.Attribute.Required;
-    unit: Schema.Attribute.String & Schema.Attribute.DefaultTo<'g'>;
-    value: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    value: Schema.Attribute.Enumeration<['Breakfast', 'Lunch', 'Dinner']> &
+      Schema.Attribute.Required;
   };
 }
 
 export interface RecipeNutrientSection extends Struct.ComponentSchema {
   collectionName: 'components_recipe_nutrient_sections';
   info: {
-    description: 'One row of the nutrition table (e.g. B\u00EDlkoviny, Sacharidy, Tuky, Vl\u00E1knina, S\u016Fl), with optional nested sub-items';
+    description: 'One row of the nutrition table (e.g. B\u00EDlkoviny, Sacharidy, Tuky, Vl\u00E1knina, S\u016Fl)';
     displayName: 'Nutrient Section';
   };
   attributes: {
     color: Schema.Attribute.Enumeration<
       ['red', 'blue', 'yellow', 'green', 'purple']
     >;
-    items: Schema.Attribute.Component<'recipe.nutrient-item', true>;
     label: Schema.Attribute.String & Schema.Attribute.Required;
     unit: Schema.Attribute.String & Schema.Attribute.DefaultTo<'g'>;
     value: Schema.Attribute.Decimal & Schema.Attribute.Required;
@@ -82,11 +80,19 @@ export interface RecipeNutrientSection extends Struct.ComponentSchema {
 export interface RecipeNutrition extends Struct.ComponentSchema {
   collectionName: 'components_recipe_nutritions';
   info: {
-    description: 'Recipe nutrition facts: total calories plus a dynamic list of nutrient sections. kJ is not stored \u2014 the app computes it from kcal.';
+    description: 'Recipe nutrition facts: total calories and protein, plus a dynamic list of nutrient sections. kJ is not stored \u2014 the app computes it from kcal.';
     displayName: 'Nutrition';
   };
   attributes: {
     caloriesKcal: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    proteinG: Schema.Attribute.Decimal &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMax<
         {
@@ -104,7 +110,7 @@ declare module '@strapi/strapi' {
       'level.reward': LevelReward;
       'quiz.answer': QuizAnswer;
       'quiz.question': QuizQuestion;
-      'recipe.nutrient-item': RecipeNutrientItem;
+      'recipe.course-tag': RecipeCourseTag;
       'recipe.nutrient-section': RecipeNutrientSection;
       'recipe.nutrition': RecipeNutrition;
     }

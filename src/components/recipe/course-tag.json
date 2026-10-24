@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_recipe_course_tags",
+  "info": {
+    "displayName": "Course Tag",
+    "description": "One meal a recipe is for — repeatable on Experience so a recipe can be e.g. both Breakfast and Lunch."
+  },
+  "options": {},
+  "attributes": {
+    "value": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "Breakfast",
+        "Lunch",
+        "Dinner"
+      ]
+    }
+  }
+}

@@ -47,7 +47,9 @@
         "globe",
         "medkit",
         "people",
-        "sparkles"
+        "sparkles",
+        "ethics",
+        "discussion"
       ],
       "default": "leaf"
     },

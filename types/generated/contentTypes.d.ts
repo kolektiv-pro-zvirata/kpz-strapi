@@ -484,10 +484,14 @@ export interface ApiExperienceExperience extends Struct.CollectionTypeSchema {
   };
   attributes: {
     content: Schema.Attribute.Blocks;
-    course: Schema.Attribute.Enumeration<['Breakfast', 'Lunch', 'Dinner']>;
+    course: Schema.Attribute.Component<'recipe.course-tag', true>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    ingredients: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::ingredient.ingredient'
+    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -504,7 +508,7 @@ export interface ApiExperienceExperience extends Struct.CollectionTypeSchema {
         number
       >;
     prepTime: Schema.Attribute.Enumeration<
-      ['Max30Min', 'Max1Hour', 'Over1Hour']
+      ['Max15Min', 'Max30Min', 'Max1Hour', 'Over1Hour']
     >;
     publishedAt: Schema.Attribute.DateTime;
     quiz: Schema.Attribute.Component<'quiz.question', true>;
@@ -526,6 +530,42 @@ export interface ApiExperienceExperience extends Struct.CollectionTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     video: Schema.Attribute.Media<'videos' | 'files'>;
+  };
+}
+
+export interface ApiIngredientIngredient extends Struct.CollectionTypeSchema {
+  collectionName: 'ingredients';
+  info: {
+    description: 'A filterable ingredient recipes can be tagged with (e.g. Tofu, \u010Co\u010Dka, Raj\u010Data).';
+    displayName: 'Ingredient';
+    pluralName: 'ingredients';
+    singularName: 'ingredient';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    experiences: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::experience.experience'
+    >;
+    label: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::ingredient.ingredient'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.UID<'label'> & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -588,7 +628,17 @@ export interface ApiMainCategoryMainCategory
       Schema.Attribute.Private;
     description: Schema.Attribute.String;
     icon: Schema.Attribute.Enumeration<
-      ['fork', 'leaf', 'heart', 'globe', 'medkit', 'people', 'sparkles']
+      [
+        'fork',
+        'leaf',
+        'heart',
+        'globe',
+        'medkit',
+        'people',
+        'sparkles',
+        'ethics',
+        'discussion',
+      ]
     > &
       Schema.Attribute.DefaultTo<'leaf'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -790,6 +840,7 @@ export interface ApiTopicTopic extends Struct.CollectionTypeSchema {
     order: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    source: Schema.Attribute.Blocks;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1310,6 +1361,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::consent.consent': ApiConsentConsent;
       'api::experience.experience': ApiExperienceExperience;
+      'api::ingredient.ingredient': ApiIngredientIngredient;
       'api::level.level': ApiLevelLevel;
       'api::main-category.main-category': ApiMainCategoryMainCategory;
       'api::news.news': ApiNewsNews;

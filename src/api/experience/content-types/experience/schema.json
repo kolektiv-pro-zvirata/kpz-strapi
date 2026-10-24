@@ -99,13 +99,16 @@
         }
       },
       "enum": [
+        "Max15Min",
         "Max30Min",
         "Max1Hour",
         "Over1Hour"
       ]
     },
     "course": {
-      "type": "enumeration",
+      "type": "component",
+      "repeatable": true,
+      "component": "recipe.course-tag",
       "conditions": {
         "visible": {
           "==": [
@@ -115,12 +118,7 @@
             "Recipe"
           ]
         }
-      },
-      "enum": [
-        "Breakfast",
-        "Lunch",
-        "Dinner"
-      ]
+      }
     },
     "servings": {
       "type": "integer",
@@ -140,6 +138,22 @@
       "type": "component",
       "component": "recipe.nutrition",
       "repeatable": false,
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "typeOfExperience"
+            },
+            "Recipe"
+          ]
+        }
+      }
+    },
+    "ingredients": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::ingredient.ingredient",
+      "inversedBy": "experiences",
       "conditions": {
         "visible": {
           "==": [

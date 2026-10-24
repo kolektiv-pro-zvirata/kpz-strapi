@@ -7,6 +7,7 @@ const PUBLIC_READABLE_UIDS = [
   'api::experience.experience',
   'api::news.news',
   'api::level.level',
+  'api::ingredient.ingredient',
 ];
 const PUBLIC_ACTIONS = ['find', 'findOne'];
 // Single types only ever expose `find`.

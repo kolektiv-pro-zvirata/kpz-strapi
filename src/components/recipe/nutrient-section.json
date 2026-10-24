@@ -2,7 +2,7 @@
   "collectionName": "components_recipe_nutrient_sections",
   "info": {
     "displayName": "Nutrient Section",
-    "description": "One row of the nutrition table (e.g. Bílkoviny, Sacharidy, Tuky, Vláknina, Sůl), with optional nested sub-items"
+    "description": "One row of the nutrition table (e.g. Bílkoviny, Sacharidy, Tuky, Vláknina, Sůl)"
   },
   "options": {},
   "attributes": {
@@ -27,11 +27,6 @@
         "green",
         "purple"
       ]
-    },
-    "items": {
-      "type": "component",
-      "repeatable": true,
-      "component": "recipe.nutrient-item"
     }
   }
 }

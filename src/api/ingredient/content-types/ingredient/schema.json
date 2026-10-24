@@ -1,0 +1,32 @@
+{
+  "kind": "collectionType",
+  "collectionName": "ingredients",
+  "info": {
+    "singularName": "ingredient",
+    "pluralName": "ingredients",
+    "displayName": "Ingredient",
+    "description": "A filterable ingredient recipes can be tagged with (e.g. Tofu, Čočka, Rajčata)."
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "label",
+      "required": true
+    },
+    "experiences": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::experience.experience",
+      "mappedBy": "ingredients"
+    }
+  }
+}
