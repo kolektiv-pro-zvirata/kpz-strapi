@@ -80,11 +80,35 @@ export interface RecipeNutrientSection extends Struct.ComponentSchema {
 export interface RecipeNutrition extends Struct.ComponentSchema {
   collectionName: 'components_recipe_nutritions';
   info: {
-    description: 'Recipe nutrition facts: total calories and protein, plus a dynamic list of nutrient sections. kJ is not stored \u2014 the app computes it from kcal.';
+    description: 'Recipe nutrition facts: total calories, protein, fat, carbs and fiber, plus a dynamic list of nutrient sections. kJ is not stored \u2014 the app computes it from kcal.';
     displayName: 'Nutrition';
   };
   attributes: {
     caloriesKcal: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    carbsG: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    fatG: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    fiberG: Schema.Attribute.Decimal &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMax<
         {

@@ -2,7 +2,7 @@
   "collectionName": "components_recipe_nutritions",
   "info": {
     "displayName": "Nutrition",
-    "description": "Recipe nutrition facts: total calories and protein, plus a dynamic list of nutrient sections. kJ is not stored — the app computes it from kcal."
+    "description": "Recipe nutrition facts: total calories, protein, fat, carbs and fiber, plus a dynamic list of nutrient sections. kJ is not stored — the app computes it from kcal."
   },
   "options": {},
   "attributes": {
@@ -12,6 +12,21 @@
       "min": 0
     },
     "proteinG": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "fatG": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "carbsG": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "fiberG": {
       "type": "decimal",
       "required": true,
       "min": 0
