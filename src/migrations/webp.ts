@@ -17,9 +17,12 @@
  * extra scan, not correctness).
  *
  * Assumes the local filesystem upload provider (this project's only provider
- * — see docker-compose's `./strapi-uploads:/opt/app/public` bind mount),
- * where a file saved as `<hash>.webp` is always served at `/uploads/<hash>.webp`.
- * A provider switch (e.g. to S3) would need this rewritten.
+ * — see docker-compose's `./strapi-uploads:/opt/app/public` bind mount): the
+ * original is read straight off disk (never over HTTP — `bootstrap()` runs
+ * before Strapi's HTTP server is listening, so fetching the app's own public
+ * URL from inside bootstrap 502s), and a file saved as `<hash>.webp` is
+ * always served at `/uploads/<hash>.webp`. A provider switch (e.g. to S3)
+ * would need both of those rewritten.
  */
 import fs from 'fs';
 import path from 'path';
@@ -116,10 +119,9 @@ export async function migrateWebpImages({ strapi }: { strapi: Core.Strapi }) {
           continue;
         }
 
-        const absoluteUrl = getAbsoluteUrl(strapi, file.url);
         strapi.log.info(`[webp-migration] converting id ${file.id}`);
 
-        const inputBuffer = await fetchBuffer(absoluteUrl);
+        const inputBuffer = fs.readFileSync(path.join(strapi.dirs.static.public, file.url));
 
         const newHash = file.hash;
         const webpFilename = `${newHash}.webp`;
@@ -236,18 +238,6 @@ export async function migrateWebpImages({ strapi }: { strapi: Core.Strapi }) {
   cleanTempFolder(tempDir);
 }
 
-async function fetchBuffer(url: string): Promise<Buffer> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
-  try {
-    const res = await fetch(url, { signal: controller.signal });
-    if (!res.ok) throw new Error(`fetch buffer failed: ${res.status} ${url}`);
-    return Buffer.from(await res.arrayBuffer());
-  } finally {
-    clearTimeout(timeout);
-  }
-}
-
 async function uploadFile(provider: UploadProvider, filePath: string, filename: string, size: number) {
   const buffer = fs.readFileSync(filePath);
   return provider.upload({
@@ -283,10 +273,4 @@ function cleanTempFolder(tempDir: string) {
       console.warn(`[webp-migration] failed to clean ${filePath}`, e);
     }
   }
-}
-
-function getAbsoluteUrl(strapi: Core.Strapi, url: string): string {
-  if (url.startsWith('http')) return url;
-  const baseUrl = (strapi.config.get('server.url') as string) || 'http://localhost:1337';
-  return `${baseUrl}${url}`;
 }
