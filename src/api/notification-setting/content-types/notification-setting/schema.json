@@ -1,0 +1,72 @@
+{
+  "kind": "singleType",
+  "collectionName": "notification_settings",
+  "info": {
+    "singularName": "notification-setting",
+    "pluralName": "notification-settings",
+    "displayName": "Notification Settings",
+    "description": "Config for the app's local (on-device) reminder notifications — no server push involved, the app reads this and schedules its own reminders"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "bookmarkReminderEnabled": {
+      "type": "boolean",
+      "required": true,
+      "default": true
+    },
+    "bookmarkReminderDays": {
+      "type": "integer",
+      "required": true,
+      "default": 7,
+      "min": 1
+    },
+    "bookmarkReminderTitle": {
+      "type": "string",
+      "required": true,
+      "default": "Máš to pořád uložené!"
+    },
+    "bookmarkReminderBody": {
+      "type": "string",
+      "required": true,
+      "default": "Zkus to dokončit, než na to zapomeneš."
+    },
+    "inactivityReminderEnabled": {
+      "type": "boolean",
+      "required": true,
+      "default": true
+    },
+    "inactivityReminderDays": {
+      "type": "integer",
+      "required": true,
+      "default": 14,
+      "min": 1
+    },
+    "inactivityReminderTitle": {
+      "type": "string",
+      "required": true,
+      "default": "Chybíš nám!"
+    },
+    "inactivityReminderBody": {
+      "type": "string",
+      "required": true,
+      "default": "Mrkni, co nového jsme pro tebe připravili."
+    },
+    "reminderHour": {
+      "type": "integer",
+      "required": true,
+      "default": 10,
+      "min": 0,
+      "max": 23
+    },
+    "reminderMinute": {
+      "type": "integer",
+      "required": true,
+      "default": 0,
+      "min": 0,
+      "max": 59
+    }
+  }
+}

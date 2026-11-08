@@ -691,6 +691,91 @@ export interface ApiNewsNews extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiNotificationSettingNotificationSetting
+  extends Struct.SingleTypeSchema {
+  collectionName: 'notification_settings';
+  info: {
+    description: "Config for the app's local (on-device) reminder notifications \u2014 no server push involved, the app reads this and schedules its own reminders";
+    displayName: 'Notification Settings';
+    pluralName: 'notification-settings';
+    singularName: 'notification-setting';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    bookmarkReminderBody: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'Zkus to dokon\u010Dit, ne\u017E na to zapomene\u0161.'>;
+    bookmarkReminderDays: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<7>;
+    bookmarkReminderEnabled: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<true>;
+    bookmarkReminderTitle: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'M\u00E1\u0161 to po\u0159\u00E1d ulo\u017Een\u00E9!'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    inactivityReminderBody: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'Mrkni, co nov\u00E9ho jsme pro tebe p\u0159ipravili.'>;
+    inactivityReminderDays: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<14>;
+    inactivityReminderEnabled: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<true>;
+    inactivityReminderTitle: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'Chyb\u00ED\u0161 n\u00E1m!'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::notification-setting.notification-setting'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    reminderHour: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 23;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<10>;
+    reminderMinute: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 59;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiPointSettingPointSetting extends Struct.SingleTypeSchema {
   collectionName: 'point_settings';
   info: {
@@ -1365,6 +1450,7 @@ declare module '@strapi/strapi' {
       'api::level.level': ApiLevelLevel;
       'api::main-category.main-category': ApiMainCategoryMainCategory;
       'api::news.news': ApiNewsNews;
+      'api::notification-setting.notification-setting': ApiNotificationSettingNotificationSetting;
       'api::point-setting.point-setting': ApiPointSettingPointSetting;
       'api::progress-event.progress-event': ApiProgressEventProgressEvent;
       'api::topic.topic': ApiTopicTopic;

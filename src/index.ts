@@ -16,6 +16,7 @@ const PUBLIC_ACTIONS = ['find', 'findOne'];
 const PUBLIC_READABLE_SINGLE_UIDS = [
   'api::point-setting.point-setting',
   'api::consent.consent',
+  'api::notification-setting.notification-setting',
 ];
 
 // Signed-in users may append their progress events and read back their own
