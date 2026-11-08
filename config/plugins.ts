@@ -86,6 +86,17 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
       },
     },
   },
+  'webp-converter': {
+    enabled: true,
+    config: {
+      // Converts PNG/JPEG uploads to WebP before Strapi stores them, so the
+      // original and every generated format (thumbnail/small/medium/large)
+      // are WebP too — the app never sees the original upload.
+      options: {
+        quality: 80,
+      },
+    },
+  },
 });
 
 export default config;

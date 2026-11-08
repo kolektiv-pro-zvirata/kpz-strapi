@@ -136,3 +136,6 @@ pgsql-data/
 strapi-uploads/
 .env.rosti-validate
 .rostistate
+
+# WebP migration scratch files (temp/webp-migration-progress.json etc.)
+temp/

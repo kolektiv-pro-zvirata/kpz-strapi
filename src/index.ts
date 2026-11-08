@@ -1,5 +1,7 @@
 import type { Core } from '@strapi/strapi';
 
+import { migrateWebpImages } from './migrations/webp';
+
 // Content types the mobile app reads over the public REST API.
 const PUBLIC_READABLE_UIDS = [
   'api::main-category.main-category',
@@ -70,6 +72,16 @@ export default {
     }
     for (const { uid, actions } of AUTHENTICATED_GRANTS) {
       await grant('authenticated', uid, actions);
+    }
+
+    // Backfill: convert pre-existing PNG/JPEG uploads to WebP. New uploads
+    // are already handled by strapi-plugin-webp-converter. Caught here so a
+    // failed/incomplete migration never prevents the app itself from
+    // starting — it just resumes from its checkpoint on the next boot.
+    try {
+      await migrateWebpImages({ strapi });
+    } catch (e) {
+      strapi.log.error('[webp-migration] aborted, will resume on next boot', e as Error);
     }
   },
 };
